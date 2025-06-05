@@ -126,6 +126,9 @@
     </item>
     <item row="3" column="7">
      <widget class="QCheckBox" name="unknown_finish_date">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="text">
        <string>Unknown</string>
       </property>
@@ -204,6 +207,9 @@
     </item>
     <item row="3" column="6">
      <widget class="QDateEdit" name="finish_date">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="sizePolicy">
        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
         <horstretch>0</horstretch>
