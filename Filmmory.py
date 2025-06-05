@@ -57,15 +57,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     # Disables Date Widgets based on selected status.
     def status_date_control(self):
         if self.status_combo.currentIndex() == 1:
+            self.score_combo.setEnabled(True)
             self.start_date.setEnabled(True)
             self.finish_date.setEnabled(True)
             self.unknown_start_date.setEnabled(True)
             self.unknown_finish_date.setEnabled(True)
         elif self.status_combo.currentIndex() == 0:
+            self.score_combo.setEnabled(True)
             self.start_date.setEnabled(True)
             self.finish_date.setEnabled(False)
             self.unknown_finish_date.setEnabled(False)
         else:
+            self.score_combo.setEnabled(False)
             self.start_date.setEnabled(False)
             self.finish_date.setEnabled(False)
             self.unknown_start_date.setEnabled(False)
@@ -107,7 +110,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     # Returns selected score or "-" if not selected.
     def score_value(self):
-        if self.score_combo.currentText() == 'Score':
+        if not self.score_combo.isEnabled() or self.score_combo.currentText() == 'Score':
             return '-'
         else:
             return self.score_combo.currentText()
