@@ -3,8 +3,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtCore import QDate, QTimer
 from datetime import date
-from Filmmory_UI import  Ui_MainWindow
-
+from Filmmory_UI import Ui_MainWindow
 
 # For converting datetime.date format to QDate format.
 # To display the current date on widgets on startup.
@@ -53,7 +52,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.save_button.clicked.connect(self.save_movies_interactive)
         self.sort_button.clicked.connect(self.sorter)
 
-
     # Disables Date Widgets based on selected status.
     def status_date_control(self):
         if self.status_combo.currentIndex() == 1:
@@ -74,7 +72,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.unknown_start_date.setEnabled(False)
             self.unknown_finish_date.setEnabled(False)
 
-
     # To disable QDate widgets when checking boxes.
     def unknown_start_date_checked(self):
         if self.unknown_start_date.isChecked():
@@ -87,7 +84,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.finish_date.setEnabled(False)
         else:
             self.finish_date.setEnabled(True)
-
 
     # To return date values based on boxes checked.
     # Last line changes PyQt5.QtCore.QDate(2025, 6, 2) -> "2/6/2025".
@@ -107,7 +103,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             return '/'.join(str(self.finish_date.date())[19:29].split(', ')[::-1])
 
-
     # Returns selected score or "-" if not selected.
     def score_value(self):
         if not self.score_combo.isEnabled() or self.score_combo.currentText() == 'Score':
@@ -115,13 +110,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             return self.score_combo.currentText()
 
-
     # Adds input to the list as a movie.
     # Keeps tabs for duplicates in self.titles.
     def add_movie(self):
         if self.title.text() == '':
             pass
-        elif self.title.text().lower() in self.titles:
+        elif self.title.text().lower().strip() in self.titles:
             self.add_button.setText('Already Present!')
             QTimer.singleShot(1000, lambda: self.add_button.setText('Add'))
         else:
@@ -131,9 +125,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 QStandardItem(self.score_value()),
                 QStandardItem(self.start_date_value()),
                 QStandardItem(self.finish_date_value())])
-            self.titles.add(self.title.text().lower())
+            self.titles.add(self.title.text().lower().strip())
             self.title.clear()
-
 
     # Finds selected row indexes and removes them decreasingly
     # If not selected, removes last entry.
@@ -142,14 +135,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         selections = self.movie_table_view.selectionModel().selectedRows()
         if not selections:
             last_row = self.movie_table_model.rowCount() - 1
-            self.titles.discard(self.movie_table_model.item(last_row, 0).text().lower())
+            self.titles.discard(self.movie_table_model.item(last_row, 0).text().lower().strip())
             self.movie_table_model.removeRow(last_row)
         else:
             selection_indexes = reversed(sorted(index.row() for index in selections))
             for each in selection_indexes:
-                self.titles.discard(self.movie_table_model.item(each, 0).text().lower())
+                self.titles.discard(self.movie_table_model.item(each, 0).text().lower().strip())
                 self.movie_table_model.removeRow(each)
-
 
     # Imports movies by turning lines into list(), separating by " | ".
     # This function includes setting headers and their sizes, since .clear() deletes them too.
@@ -158,18 +150,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.movie_table_model.clear()
         self.movie_table_model.setHorizontalHeaderLabels(['Title', 'Status', 'Score', 'Start Date', 'Finish Date'])
         self.movie_table_view.setColumnWidth(0, 320)
+        self.titles = set()
         with open('filmmory_save1.txt', encoding='UTF-8') as filmmory_save1:
             for line in filmmory_save1:
                 tags = line.strip('\n').split(' | ')
-                self.titles = set()
-                self.titles.add(tags[0].lower())
+                self.titles.add(tags[0].lower().strip())
                 single_movie = Movie(tags)
                 self.movie_table_model.appendRow([
                     QStandardItem(single_movie.title),
                     QStandardItem(single_movie.status),
                     QStandardItem(single_movie.score),
                     QStandardItem(single_movie.start_date),
-                    QStandardItem(single_movie.finish_date),])
+                    QStandardItem(single_movie.finish_date)])
 
     # Changes button text briefly.
     def import_movies_interactive(self):
@@ -185,7 +177,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         finally:
             QTimer.singleShot(2000, lambda: self.import_button.setText('Import'))
 
-
     # Saves the list into a .txt file, separating tags with a " | ".
     def save_movies(self):
         with open('filmmory_save1.txt', 'w', encoding='UTF-8') as filmmory_save1:
@@ -194,9 +185,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     index = self.movie_table_model.index(row, column)
                     content = self.movie_table_model.itemFromIndex(index).text()
                     if column != int(self.movie_table_model.columnCount()) - 1:
-                        filmmory_save1.write(content+' | ')
+                        filmmory_save1.write(content + ' | ')
                     else:
-                        filmmory_save1.write(content+'\n')
+                        filmmory_save1.write(content + '\n')
 
     # Changes button text briefly.
     def save_movies_interactive(self):
@@ -205,19 +196,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         QTimer.singleShot(1000, lambda: self.save_button.setText('Done!'))
         QTimer.singleShot(2000, lambda: self.save_button.setText('Save'))
 
-
     # Sorts the savefile and then imports it.
     # Uses both self.save_movies() and self.import_movies().
     def sorter(self):
         list1 = []
         self.save_movies()
         try:
-            with open('filmmory_save1.txt',encoding='UTF-8') as filmmory_save1:
+            with open('filmmory_save1.txt', encoding='UTF-8') as filmmory_save1:
                 self.sort_button.setText('Sorting...')
                 for line in filmmory_save1:
                     list1.append(line)
                 list1 = sorted(list1)
-            with open('filmmory_save1.txt','w', encoding='UTF-8') as filmmory_save1:
+            with open('filmmory_save1.txt', 'w', encoding='UTF-8') as filmmory_save1:
                 for each in list1:
                     filmmory_save1.write(each)
             self.import_movies()
@@ -229,7 +219,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             QTimer.singleShot(1000, lambda: self.sort_button.setText('Savefile Damaged!'))
         finally:
             QTimer.singleShot(2000, lambda: self.sort_button.setText('Sort'))
-
 
 
 app = QApplication(sys.argv)
