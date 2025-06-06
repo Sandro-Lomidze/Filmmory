@@ -37,10 +37,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.movie_table_model = QStandardItemModel()
         self.movie_table_view.setModel(self.movie_table_model)
 
-        #For saving entered titles only to not allow duplicates.
+        # For saving entered titles only to not allow duplicates.
         self.titles = set()
 
-        #This function includes setting headers and their sizes, since .clear() removes them too.
+        # This function includes setting headers and their sizes, since .clear() removes them too.
         self.import_movies_interactive()
 
         self.unknown_start_date.stateChanged.connect(self.unknown_start_date_checked)
