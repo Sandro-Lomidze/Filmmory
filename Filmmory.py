@@ -41,7 +41,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.titles = set()
 
         #This function includes setting headers and their sizes, since .clear() removes them too.
-        self.import_movies()
+        self.import_movies_interactive()
 
         self.unknown_start_date.stateChanged.connect(self.unknown_start_date_checked)
         self.unknown_finish_date.stateChanged.connect(self.unknown_finish_date_checked)
